@@ -24,4 +24,16 @@ const CurrentUser = async (req, res) => {
     res.status(400).send(error);
   }
 };
-module.exports = { createTask, CurrentUser };
+
+const deleteTask = async (req, res) => {
+  try {
+    const ItemId = req.query.taskId;
+    const CurrentUser = await User.findById(req.user._id);
+    const updatedUser = CurrentUser.task.filter((item) => item.id !== ItemId);
+    await CurrentUser.save();
+    res.status(200).json({ updatedUser });
+  } catch (error) {
+    res.status(400).send(error);
+  }
+};
+module.exports = { createTask, CurrentUser, deleteTask };
