@@ -36,4 +36,22 @@ const deleteTask = async (req, res) => {
     res.status(400).send(error);
   }
 };
+
+const EditTask = async (req, res) => {
+  try {
+    const { title, description } = req.body;
+    const ItemId = req.query.taskId;
+    const CurrentUser = await User.findById(req.user._id);
+    const newTask = {
+      title,
+      description,
+    };
+    const updatedUser = CurrentUser.task.map((item) =>
+      item.id === ItemId ? newTask : item
+    );
+    await CurrentUser.save();
+    res.status(200).json({ updatedUser });
+  } catch (error) {}
+};
+
 module.exports = { createTask, CurrentUser, deleteTask };
