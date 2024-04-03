@@ -7,8 +7,11 @@ const createTask = async (req, res) => {
     const newTask = {
       title,
       description,
+      _id: new Date().toISOString(),
     };
+
     const CurrentUser = await User.findById(req.user._id);
+
     CurrentUser.task.push(newTask);
     await CurrentUser.save();
     res.status(201).send("successfully added");
@@ -18,7 +21,8 @@ const createTask = async (req, res) => {
 };
 const CurrentUser = async (req, res) => {
   try {
-    const CurrentUser = await User.findById(req.user._id);
+    const CurrentUser = await User.findById(req.user._id).populate("Tasks");
+
     res.status(200).json({ CurrentUser });
   } catch (error) {
     res.status(400).send(error);
@@ -27,11 +31,14 @@ const CurrentUser = async (req, res) => {
 
 const deleteTask = async (req, res) => {
   try {
-    const ItemId = req.query.taskId;
+    const ItemId = req.query.id;
     const CurrentUser = await User.findById(req.user._id);
-    const updatedUser = CurrentUser.task.filter((item) => item.id !== ItemId);
+    const updatedTask = CurrentUser.task.filter(
+      (item) => item._id.toString() !== ItemId.toString()
+    );
+    CurrentUser.task = updatedTask;
     await CurrentUser.save();
-    res.status(200).json({ updatedUser });
+    res.status(200).json({ updatedTask });
   } catch (error) {
     res.status(400).send(error);
   }

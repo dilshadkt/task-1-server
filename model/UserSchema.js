@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
+const { Task } = require("./TaskSchema");
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -9,6 +10,10 @@ const userSchema = new mongoose.Schema({
   },
   task: {
     type: Array,
+  },
+  Tasks: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Tasks",
   },
 });
 
