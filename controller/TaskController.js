@@ -32,6 +32,7 @@ const CurrentUser = async (req, res) => {
 const deleteTask = async (req, res) => {
   try {
     const ItemId = req.query.id;
+
     const CurrentUser = await User.findById(req.user._id);
     const updatedTask = CurrentUser.task.filter(
       (item) => item._id.toString() !== ItemId.toString()
@@ -48,17 +49,19 @@ const EditTask = async (req, res) => {
   try {
     const { title, description } = req.body;
     const ItemId = req.query.taskId;
+
     const CurrentUser = await User.findById(req.user._id);
-    const newTask = {
-      title,
-      description,
-    };
-    const updatedUser = CurrentUser.task.map((item) =>
-      item.id === ItemId ? newTask : item
+    const newTask = req.body;
+    console.log(newTask);
+    const updatedTask = CurrentUser.task.map((item) =>
+      item._id === ItemId ? { ...newTask, _id: ItemId } : item
     );
+    CurrentUser.task = updatedTask;
     await CurrentUser.save();
-    res.status(200).json({ updatedUser });
-  } catch (error) {}
+    res.status(200).json({ CurrentUser });
+  } catch (error) {
+    res.status(400).send(error);
+  }
 };
 
-module.exports = { createTask, CurrentUser, deleteTask };
+module.exports = { createTask, CurrentUser, deleteTask, EditTask };
